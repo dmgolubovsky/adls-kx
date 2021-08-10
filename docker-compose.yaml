@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+        adls:
+                build:
+                        context: .
+                        dockerfile: Dockerfile
+                command: /bin/sleep inf
+                container_name: adls-live
+                image: adls-kx
+                environment:
+                        - container=docker
+                        - QT_X11_NO_MITSHM=1
+                        - TZ=EST5EDT
+                        - DISPLAY
+                        - PATH=$PATH:/root/bin
+                        - LANG=en_US.UTF-8
+                        - ARDOUR_DATA_PATH=/root/.config/ardour6/scripts
+                ipc: host
+                network_mode: host
+                ulimits:
+                        memlock: 400000000
+                        rtprio: 90
+                devices:
+                        - /dev/snd
+                        - /dev/dri
+                volumes:
+                        - /etc/timezone:/etc/timezone:ro
+                        - /tmp/.X11-unix/:/tmp/.X11-unix
+                        - adls_home:/root:rw
+                        - soundfonts:/usr/lib/sf2:ro
+                        - hyd_drumkits:/usr/share/hydrogen/data/drumkits:ro
+                        - $HOME/Music:/Music:ro
+                        - $HOME/src/ardlua:/root/.config/ardour6/scripts:ro
+                        - $HOME/.Xauthority:/root/.Xauthority:rw
+volumes:
+        adls_home:
+                external: true
+                name: adls_home
+        soundfonts:
+                external: true
+                name: soundfonts
+        hyd_drumkits:
+                external: true
+                name: hyd_drumkits
+                
