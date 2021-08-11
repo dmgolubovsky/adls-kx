@@ -5,7 +5,7 @@ services:
                 build:
                         context: .
                         dockerfile: Dockerfile
-                command: /bin/sleep inf
+                command: /usr/bin/dumb-init /bin/sleep inf
                 container_name: adls-live
                 image: adls-kx
                 environment:

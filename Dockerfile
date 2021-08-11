@@ -57,6 +57,16 @@ workdir tools/linux_packaging
 run ./build --public --strip some
 run ./package --public --singlearch
 
+# Pull custom LUA scripts
+
+from base-ubuntu as ardlua
+
+run apt-fast install -y git
+
+workdir /
+
+run git clone https://github.com/dmgolubovsky/ardlua.git
+
 # Final assembly. Pull all parts together.
 
 from base-ubuntu as adls
@@ -106,12 +116,15 @@ run rm -rf /install-ardour
 workdir /install-kx
 
 # Install required dependencies if needed
+
 run apt-fast -y install apt-transport-https gpgv wget
 
 # Download package file
+
 run wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_10.0.3_all.deb
 
 # Install it
+
 run dpkg -i kxstudio-repos_10.0.3_all.deb
 
 run apt-fast -y update
@@ -121,19 +134,17 @@ run env DEBIAN_FRONTEND=noninteractive apt-fast -y install kxstudio-meta-all \
                         kxstudio-meta-audio-plugins kxstudio-meta-audio-plugins-collection \
                         vim alsa-utils zenity mda-lv2 padthv1-lv2 samplv1-lv2 \
                         so-synth-lv2 swh-lv2 synthv1-lv2 whysynth wsynth-dssi xsynth-dssi phasex \
-                        iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common 
+                        iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
+                        locales less drumkv1 audacity
                         
+
+run apt-fast install -y dumb-init
 
 run rm -rf /install-kx
 
-
-run env DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -y libportaudio2 libportmidi0 \
-        liblo7 libwxgtk3.0-gtk3-0v5 libsigc++-2.0-0v5 libsamplerate0 libasound2 libfftw3-double3 \
-        librubberband2 libsndfile1 drumkv1 audacity locales less libsonic0 libqt5webenginewidgets5 \
-        libqt5xmlpatterns5 libqt5webenginecore5 libqt5quick5 libqt5qml5 libqt5quickcontrols2-5 \
-        libqt5quicktemplates2-5 libqt5quickwidgets5 qml-module-qtgraphicaleffects qml-module-qtquick-controls
-
 run locale-gen en_US.UTF-8
+
+copy --from=ardlua /ardlua/prod /opt/Ardour-$ardvers.$ardsub/share/scripts
 
 # Finally clean up
 
