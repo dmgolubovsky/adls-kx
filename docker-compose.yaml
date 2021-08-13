@@ -32,7 +32,7 @@ services:
                         - hyd_drumkits:/usr/share/hydrogen/data/drumkits:ro
                         - $HOME/Music:/Music:ro
                         - $HOME/src/ardlua:/root/.config/ardour6/scripts:ro
-                        - $HOME/.Xauthority:/root/.Xauthority:rw
+                        - $XAUTHORITY:/root/.Xauthority:rw
 volumes:
         adls_home:
                 external: true
