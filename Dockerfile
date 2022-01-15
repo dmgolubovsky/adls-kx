@@ -6,7 +6,7 @@
 
 from ubuntu:20.04 as base-ubuntu
 
-env ardvers=6.8
+env ardvers=6.9
 env ardsub=0
 
 run cp /etc/apt/sources.list /etc/apt/sources.list~
