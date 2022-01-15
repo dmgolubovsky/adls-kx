@@ -135,7 +135,7 @@ run env DEBIAN_FRONTEND=noninteractive apt-fast -y install kxstudio-meta-all \
                         vim alsa-utils zenity mda-lv2 padthv1-lv2 samplv1-lv2 \
                         so-synth-lv2 swh-lv2 synthv1-lv2 whysynth wsynth-dssi xsynth-dssi phasex \
                         iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
-                        locales less drumkv1 audacity
+                        locales less drumkv1 audacity bjumblr bsequencer
                         
 
 run apt-fast install -y dumb-init
