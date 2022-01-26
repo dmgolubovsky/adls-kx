@@ -25,4 +25,4 @@ dist
 .stack-work
 src/.*.swp
 *.wav
-
+.envrc
