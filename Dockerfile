@@ -24,6 +24,22 @@ run echo "MIRRORS=( 'http://archive.ubuntu.com/ubuntu, http://de.archive.ubuntu.
 
 run apt-fast -y update && apt-fast -y upgrade
 
+# Build B-sequencer
+
+from base-ubuntu as bseq
+
+run apt -y install build-essential git
+run apt -y install pkg-config libx11-dev libcairo2-dev lv2-dev
+
+run git clone https://github.com/sjaehn/BSEQuencer.git
+
+workdir BSEQuencer
+
+run git checkout 1.8.10
+
+run make
+run make install
+
 # Based on the dependencies, butld Ardour proper. In the end create a tar binary bundle.
 
 from base-ubuntu as ardour
@@ -135,7 +151,7 @@ run env DEBIAN_FRONTEND=noninteractive apt-fast -y install kxstudio-meta-all \
                         vim alsa-utils zenity mda-lv2 padthv1-lv2 samplv1-lv2 \
                         so-synth-lv2 swh-lv2 synthv1-lv2 whysynth wsynth-dssi xsynth-dssi phasex \
                         iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
-                        locales less drumkv1 audacity bjumblr bsequencer
+                        locales less drumkv1 audacity bjumblr
                         
 
 run apt-fast install -y dumb-init
@@ -145,6 +161,8 @@ run rm -rf /install-kx
 run locale-gen en_US.UTF-8
 
 copy --from=ardlua /ardlua/prod /opt/Ardour-$ardvers.$ardsub/share/scripts
+
+copy --from=bseq /usr/local/lib/lv2 /usr/lib/lv2
 
 # Finally clean up
 
