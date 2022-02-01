@@ -24,6 +24,30 @@ run echo "MIRRORS=( 'http://archive.ubuntu.com/ubuntu, http://de.archive.ubuntu.
 
 run apt-fast -y update && apt-fast -y upgrade
 
+# Build Audacity
+
+from base-ubuntu as audacity
+
+run apt -y install build-essential git cmake python3-pip
+run pip3 install conan
+run apt -y install libgtk2.0-dev libasound2-dev libavformat-dev uuid-dev libjack-jackd2-dev
+
+run git clone https://github.com/audacity/audacity/
+
+workdir audacity
+
+run git checkout Audacity-3.1.3
+
+workdir /
+
+workdir build
+
+run cmake -G "Unix Makefiles" -Daudacity_use_ffmpeg=loaded -DCMAKE_INSTALL_PREFIX=/usr  ../audacity
+
+run make -j `nproc`
+
+run make DESTDIR=/install_audacity install
+
 # Build B-sequencer
 
 from base-ubuntu as bseq
@@ -151,7 +175,7 @@ run env DEBIAN_FRONTEND=noninteractive apt-fast -y install kxstudio-meta-all \
                         vim alsa-utils zenity mda-lv2 padthv1-lv2 samplv1-lv2 \
                         so-synth-lv2 swh-lv2 synthv1-lv2 whysynth wsynth-dssi xsynth-dssi phasex \
                         iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
-                        locales less drumkv1 audacity bjumblr
+                        locales less drumkv1 bjumblr
                         
 
 run apt-fast install -y dumb-init
@@ -163,6 +187,8 @@ run locale-gen en_US.UTF-8
 copy --from=ardlua /ardlua/prod /opt/Ardour-$ardvers.$ardsub/share/scripts
 
 copy --from=bseq /usr/local/lib/lv2 /usr/lib/lv2
+
+copy --from=audacity /install_audacity/usr /usr
 
 # Finally clean up
 
