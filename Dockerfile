@@ -9,6 +9,8 @@ from ubuntu:20.04 as base-ubuntu
 env ardvers=6.9
 env ardsub=0
 
+env msvers=v3.6.2
+
 run cp /etc/apt/sources.list /etc/apt/sources.list~
 run sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 run apt -y update
@@ -23,6 +25,47 @@ run echo debconf apt-fast/aptmanager string apt-get | debconf-set-selections
 run echo "MIRRORS=( 'http://archive.ubuntu.com/ubuntu, http://de.archive.ubuntu.com/ubuntu, http://ftp.halifax.rwth-aachen.de/ubuntu, http://ftp.uni-kl.de/pub/linux/ubuntu, http://mirror.informatik.uni-mannheim.de/pub/linux/distributions/ubuntu/' )" >> /etc/apt-fast.conf
 
 run apt-fast -y update && apt-fast -y upgrade
+
+# Build MuseScore
+
+# Build Musescore from git
+
+from base-ubuntu as mscore
+
+run env DEBIAN_FRONTEND=noninteractive apt-fast -y install cmake qtbase5-dev qtwebengine5-dev qttools5-dev \
+                        libqt5svg5-dev libqt5xmlpatterns5-dev qtquickcontrols2-5-dev lame libmp3lame-dev \
+                        libqt5webenginecore5 qt5-default git qml-module-qtgraphicaleffects qml-module-qtquick-controls 
+
+workdir /bld_mscore
+
+run git clone https://github.com/musescore/MuseScore.git
+
+workdir MuseScore
+
+run git checkout $msvers
+
+run env DEBIAN_FRONTEND=noninteractive apt-fast -y install g++ libasound2-dev libsndfile1-dev \
+                        zlib1g-dev portaudio19-dev libportmidi-dev libaudiofile-dev
+
+
+add musescore-1.diff .
+
+run patch -p1 <musescore-1.diff
+
+workdir my-build-dir
+
+
+run sed -i 's/QuickTemplates2/\#QuickTemplates2/g' ../build/FindQt5.cmake
+
+
+run cmake .. -DCMAKE_INSTALL_PREFIX=/install-mscore -DBUILD_PULSEAUDIO=OFF \
+             -DBUILD_TELEMETRY_MODULE=OFF -DBUILD_LAME=OFF
+
+run cmake -j4 --build . 
+
+run cmake --build . --target install
+
+
 
 # Build Audacity
 
@@ -44,7 +87,7 @@ workdir build
 
 run cmake -G "Unix Makefiles" -Daudacity_use_ffmpeg=loaded -DCMAKE_INSTALL_PREFIX=/usr  ../audacity
 
-run make -j `nproc`
+run make -j 4
 
 run make DESTDIR=/install_audacity install
 
@@ -172,10 +215,10 @@ run apt-fast -y update
 run env DEBIAN_FRONTEND=noninteractive apt-fast -y install kxstudio-meta-all \
                         guitarix-lv2 ir.lv2 lv2vocoder \
                         kxstudio-meta-audio-plugins kxstudio-meta-audio-plugins-collection \
-                        vim alsa-utils zenity mda-lv2 padthv1-lv2 samplv1-lv2 \
-                        so-synth-lv2 swh-lv2 synthv1-lv2 whysynth wsynth-dssi xsynth-dssi phasex \
+                        vim alsa-utils yad mda-lv2 padthv1-lv2 samplv1-lv2 \
+                        so-synth-lv2 swh-lv2 libportmidi0 libqt5xmlpatterns5 libqt5webenginewidgets5 \
                         iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
-                        locales less drumkv1 bjumblr
+                        locales less 
                         
 
 run apt-fast install -y dumb-init
@@ -189,6 +232,8 @@ copy --from=ardlua /ardlua/prod /opt/Ardour-$ardvers.$ardsub/share/scripts
 copy --from=bseq /usr/local/lib/lv2 /usr/lib/lv2
 
 copy --from=audacity /install_audacity/usr /usr
+
+copy --from=mscore /install-mscore /usr/local
 
 # Finally clean up
 
