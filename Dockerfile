@@ -254,7 +254,7 @@ run env DEBIAN_FRONTEND=noninteractive apt-fast -y install kxstudio-meta-all \
                         vim alsa-utils yad mda-lv2 padthv1-lv2 samplv1-lv2 \
                         so-synth-lv2 swh-lv2 libportmidi0 libqt5xmlpatterns5 libqt5webenginewidgets5 \
                         iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
-                        locales less libsonic0
+                        locales less libsonic0 sox
                         
 
 run apt-fast install -y dumb-init
@@ -286,6 +286,10 @@ run rm -rf /var/lib/cache
 run rm -rf /var/lib/log
 run rm -rf /var/cache
 run rm -rf /tmp/*
+
+add usrbin /usr/bin
+
+run ln -sf /usr/bin/espeak-ng /usr/local/bin
 
 from scratch
 

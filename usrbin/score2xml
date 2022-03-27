@@ -5,7 +5,7 @@ xmldir=/root/MXML
 xmlext=xml # for Musescore3 it will be musicxml
 
 lyrvoc=/usr/local/bin/lyrvoc
-espeak=/usr/local/bin/espeak-ng
+espeak=/usr/bin/espeak-ng
 
 shopt -s nullglob
 
