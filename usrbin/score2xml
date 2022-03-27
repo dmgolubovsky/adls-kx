@@ -1,0 +1,107 @@
+#! /bin/bash
+
+scoredir=/root/Scores
+xmldir=/root/MXML
+xmlext=xml # for Musescore3 it will be musicxml
+
+lyrvoc=/usr/local/bin/lyrvoc
+espeak=/usr/local/bin/espeak-ng
+
+shopt -s nullglob
+
+# Go over all files in the scoredir and if there is a newer or unmatched file than in the xmldir
+# then invoke musescore to convert score to MusicXML. For each converted MusicXML file apply
+# generation of lyrics and/or MIDI extraction.
+
+mkdir -p $xmldir
+
+function msg_exit
+{
+	echo "$1"
+	exit 1
+}
+
+# Generate a voice file for espeak defining a monotone voice EN-US flavored.
+# The voice may be edited afterwards
+
+function mk_new_voice
+{
+	if freq=`echo "220"`
+		then (
+			echo "name $part"
+			echo "language en"
+			echo "phonemes en-us"
+			echo "pitch $freq $freq"
+			echo "intonation 3"
+			echo "replace 03 I i"
+			echo "replace 03 I2 i"
+			echo "dictrules 3 6"
+		) > "$2"
+		else return 1
+	fi
+}
+
+# Create lyrvoc arguments file which holds all relevant command line arguments line by line.
+# Every argument is a shell script causing one invocation of a program mentioned within.
+# If pitch in the related voice file is set to 0 then lyrvoc will not be called on that file
+# (other program may be, if its args file is added manually).
+
+function mk_lyrvoc_arg_file
+{
+	pitch=`grep '^pitch' "$2" | cut -d" " -f 2`
+	[ x"$pitch" = "x0" ] && return 0
+	(
+		echo "$lyrvoc \\"
+		echo "--transp=0 \\"
+		echo "--detune=0 \\"
+		echo "--ampl=100 \\"
+		echo "--part='$part' \\"
+		echo "--output='$part' \\"
+		echo "--acc=20 \\"
+		echo "--exec='$espeak' \\"
+		echo "--voice='./`basename ${voice}`' \\"
+		echo "$4"
+	) > "$3"
+	return 0
+}
+
+# Overall processing for each MusicXML file
+
+function process_mxml 
+{
+	echo "Processing $1"
+	destdir="$xmldir/`basename $1 .$xmlext`_proc"
+	mkdir -p "$destdir" || msg_exit "$destdir"
+	$lyrvoc -L "$1" | (
+		while read part && [[ $part =~ ^VOC ]] ; do
+			echo "Processing $1 part $part"
+			voice=$destdir/`tr 'A-Z' 'a-z' <<< "$part.voice"`
+			argfile=$destdir/$part.lyrvoc.args
+			[ -f "$voice" ] || mk_new_voice "$part" "$voice" || msg_exit "voice not created for $part"
+			[ -f "$argfile" ] || mk_lyrvoc_arg_file "$part" "$voice" "$argfile" "$1"
+		done
+	)
+	for a in $destdir/*.args ; do
+	(
+		echo "Running $a"
+		runid="`basename "$a" .args`"
+		msgfile=$destdir/$runid.message
+		cd $destdir
+		sh "$a" 2>"$msgfile"
+		[ -s "$msgfile" ] && echo "$runid" "$(head -n 1 $msgfile)" || /bin/true
+	)
+	done
+}
+
+for score in $scoredir/*.mscz ; do
+	scrf="`basename $score .mscz`"
+	xmlf=$xmldir/$scrf.$xmlext
+	if [ ! -e "$xmlf" ] || [ "$score" -nt "$xmlf" ] || true ; then
+		echo "$scrf" "Started"
+		( musescore -f "$score" -o "$xmlf" && process_mxml "$xmlf" ) || 
+			( msg_exit "Musescore conversion failed" )
+		echo "$scrf" "Processed"
+	fi
+done
+
+[ ! -z "$1" ] && sleep "$1" && exec "$0" "$1"

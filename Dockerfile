@@ -65,6 +65,42 @@ run cmake -j4 --build .
 
 run cmake --build . --target install
 
+# Build espeak from git
+
+from base-ubuntu as bld-espeak
+
+run apt-fast install -y autoconf automake libtool make libsonic-dev git
+
+workdir /src
+run git clone https://github.com/espeak-ng/espeak-ng.git
+workdir espeak-ng
+run git checkout 1.50
+run ./autogen.sh
+run ./configure --prefix=/usr
+run make
+run mkdir /install-espeak
+run env DESTDIR=/install-espeak make install
+
+# Install Haskell Stack
+
+from base-ubuntu as stack
+
+run apt-fast install -y wget
+run wget -qO- https://get.haskellstack.org/ | sed 's/apt-get/apt-fast/g' | sh
+run stack update
+run stack upgrade
+
+# Build hsespeak
+
+from stack as hsespeak
+
+workdir /src
+run git clone https://github.com/dmgolubovsky/hsespeak.git
+workdir hsespeak
+run stack build --only-dependencies
+run stack install
+run mkdir -p /espvs/bin
+run cp /root/.local/bin/lyrvoc /espvs/bin
 
 
 # Build Audacity
@@ -218,7 +254,7 @@ run env DEBIAN_FRONTEND=noninteractive apt-fast -y install kxstudio-meta-all \
                         vim alsa-utils yad mda-lv2 padthv1-lv2 samplv1-lv2 \
                         so-synth-lv2 swh-lv2 libportmidi0 libqt5xmlpatterns5 libqt5webenginewidgets5 \
                         iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
-                        locales less 
+                        locales less libsonic0
                         
 
 run apt-fast install -y dumb-init
@@ -234,6 +270,10 @@ copy --from=bseq /usr/local/lib/lv2 /usr/lib/lv2
 copy --from=audacity /install_audacity/usr /usr
 
 copy --from=mscore /install-mscore /usr/local
+
+copy --from=bld-espeak /install-espeak/usr /usr
+
+copy --from=hsespeak /espvs/bin /usr/local/bin
 
 # Finally clean up
 
