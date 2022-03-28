@@ -96,7 +96,7 @@ function process_mxml
 for score in $scoredir/*.mscz ; do
 	scrf="`basename $score .mscz`"
 	xmlf=$xmldir/$scrf.$xmlext
-	if [ ! -e "$xmlf" ] || [ "$score" -nt "$xmlf" ] || true ; then
+	if [ ! -e "$xmlf" ] || [ "$score" -nt "$xmlf" ] ; then
 		echo "$scrf" "Started"
 		( musescore -f "$score" -o "$xmlf" && process_mxml "$xmlf" ) || 
 			( msg_exit "Musescore conversion failed" )
