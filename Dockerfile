@@ -248,13 +248,13 @@ run dpkg -i kxstudio-repos_10.0.3_all.deb
 
 run apt-fast -y update
 
-run env DEBIAN_FRONTEND=noninteractive apt-fast -y install kxstudio-meta-all \
+run env DEBIAN_FRONTEND=noninteractive apt-fast -y install \
                         guitarix-lv2 ir.lv2 lv2vocoder \
-                        kxstudio-meta-audio-plugins kxstudio-meta-audio-plugins-collection \
+                        kxstudio-meta-audio-plugins-collection \
                         vim alsa-utils yad mda-lv2 padthv1-lv2 samplv1-lv2 \
                         so-synth-lv2 swh-lv2 libportmidi0 libqt5xmlpatterns5 libqt5webenginewidgets5 \
                         iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
-                        locales less libsonic0 sox
+                        locales less libsonic0 sox libportaudio2 libqt5svg5 libqt5help5 qml-module-qtquick-controls qtquickcontrols2-5-dev
                         
 
 run apt-fast install -y dumb-init
