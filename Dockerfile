@@ -253,7 +253,7 @@ run env DEBIAN_FRONTEND=noninteractive apt-fast -y install \
                         kxstudio-meta-audio-plugins-collection \
                         vim alsa-utils yad mda-lv2 padthv1-lv2 samplv1-lv2 \
                         so-synth-lv2 swh-lv2 libportmidi0 libqt5xmlpatterns5 libqt5webenginewidgets5 \
-                        iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common \
+                        iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common musescore3 \
                         locales less libsonic0 sox libportaudio2 libqt5svg5 libqt5help5 qml-module-qtquick-controls qtquickcontrols2-5-dev
                         
 
@@ -269,7 +269,7 @@ copy --from=bseq /usr/local/lib/lv2 /usr/lib/lv2
 
 copy --from=audacity /install_audacity/usr /usr
 
-copy --from=mscore /install-mscore /usr/local
+# copy --from=mscore /install-mscore /usr/local
 
 copy --from=bld-espeak /install-espeak/usr /usr
 
