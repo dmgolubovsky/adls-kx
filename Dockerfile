@@ -290,6 +290,7 @@ run rm -rf /tmp/*
 add usrbin /usr/bin
 
 run ln -sf /usr/bin/espeak-ng /usr/local/bin
+run ln -sf /usr/bin/mscore3 /usr/bin/musescore
 
 from scratch
 
