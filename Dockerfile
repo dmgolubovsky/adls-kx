@@ -26,6 +26,21 @@ run echo "MIRRORS=( 'http://archive.ubuntu.com/ubuntu, http://de.archive.ubuntu.
 
 run apt-fast -y update && apt-fast -y upgrade
 
+# Build QMidiArp standalone
+
+from  base-ubuntu as qmidiarp
+
+run apt install -y git autoconf automake libtool libasound2-dev qt5-default libjack-jackd2-dev
+run apt install -y g++ pkg-config lv2-dev make
+run mkdir /build-qmidiarp
+workdir /build-qmidiarp
+run git clone https://github.com/emuse/qmidiarp.git
+workdir qmidiarp
+run autoreconf -i
+run ./configure --enable-buildapp --enable-alsa --disable-lv2plugins --disable-lv2pluginuis --disable-nsm --prefix=/usr --disable-dependency-tracking
+run make
+run make install
+
 # Build MuseScore
 
 # Build Musescore from git
@@ -274,6 +289,11 @@ copy --from=audacity /install_audacity/usr /usr
 copy --from=bld-espeak /install-espeak/usr /usr
 
 copy --from=hsespeak /espvs/bin /usr/local/bin
+
+# Install qmidiarp
+
+copy --from=qmidiarp /usr/bin/qmidiarp /usr/bin
+copy --from=qmidiarp /usr/share/qmidiarp /usr/share
 
 # Finally clean up
 
