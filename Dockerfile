@@ -266,7 +266,7 @@ run apt-fast -y update
 run env DEBIAN_FRONTEND=noninteractive apt-fast -y install \
                         guitarix-lv2 ir.lv2 lv2vocoder \
                         kxstudio-meta-audio-plugins-collection lsp-plugins-lv2 \
-                        vim alsa-utils yad mda-lv2 padthv1-lv2 samplv1-lv2 \
+                        vim alsa-utils yad mda-lv2 padthv1-lv2 samplv1-lv2 carla \
                         so-synth-lv2 swh-lv2 libportmidi0 libqt5xmlpatterns5 libqt5webenginewidgets5 \
                         iem-plugin-suite-vst hydrogen-drumkits hydrogen-data guitarix-common musescore3 \
                         locales less libsonic0 sox libportaudio2 libqt5svg5 libqt5help5 qml-module-qtquick-controls qtquickcontrols2-5-dev
