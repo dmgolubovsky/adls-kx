@@ -264,7 +264,7 @@ run dpkg -i kxstudio-repos_10.0.3_all.deb
 run apt-fast -y update
 
 run env DEBIAN_FRONTEND=noninteractive apt-fast -y install \
-                        guitarix-lv2 ir.lv2 lv2vocoder \
+                        guitarix-lv2 ir.lv2 lv2vocoder gmrun zynaddsubfx \
                         kxstudio-meta-audio-plugins-collection lsp-plugins-lv2 \
                         vim alsa-utils yad mda-lv2 padthv1-lv2 samplv1-lv2 carla \
                         so-synth-lv2 swh-lv2 libportmidi0 libqt5xmlpatterns5 libqt5webenginewidgets5 \
@@ -290,10 +290,26 @@ copy --from=bld-espeak /install-espeak/usr /usr
 
 copy --from=hsespeak /espvs/bin /usr/local/bin
 
+run apt install -y git
+
+workdir /tmp
+
+run git clone https://github.com/zynaddsubfx/instruments
+
+workdir instruments
+
+run cp -afpR * /usr/share/zynaddsubfx
+
+run rm -rf /tmp/instruments
+
+run apt remove -y git
+
+run apt -y autoremove
+
 # Install qmidiarp
 
-copy --from=qmidiarp /usr/bin/qmidiarp /usr/bin
-copy --from=qmidiarp /usr/share/qmidiarp /usr/share
+#copy --from=qmidiarp /usr/bin/qmidiarp /usr/bin
+#copy --from=qmidiarp /usr/share/qmidiarp /usr/share
 
 # Finally clean up
 
