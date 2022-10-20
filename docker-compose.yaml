@@ -31,6 +31,7 @@ services:
                         - soundfonts:/usr/lib/sf2:ro
                         - hyd_drumkits:/usr/share/hydrogen/data/drumkits:ro
                         - $HOME/Music:/Music:ro
+                        - $HOME/Downloads:/Downloads:ro
                         - $HOME/src/ardlua:/root/.config/ardour6/scripts:ro
                         - $HOME/.asoundrc:/root/.asoundrc:ro
                         - $XAUTHORITY:/root/.Xauthority:rw
